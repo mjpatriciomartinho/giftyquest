@@ -10,7 +10,7 @@ for a budget and complete a purchase inside the conversation.
 
 Built for the Amazon "Build, Ship, Shape" developer hackathon (Alexa+ track).
 
-**Live demo:** https://main.dv6i6jw0gr6sb.amplifyapp.com (judges: the code for the live Alexa is in the
+**Live demo:** https://main.d2dknwokc7tag7.amplifyapp.com (judges: the code for the live Alexa is in the
 submission's testing instructions).
 
 ## What it does
