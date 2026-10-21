@@ -22,6 +22,6 @@ for (const message of lines) {
   history.push({ role: "user", text: message }, { role: "assistant", text: reply.memory ?? reply.text ?? "" });
 }
 const acct = await (await fetch(`${base}/api/accounts/${id}`)).json();
-const maria = acct.people.find((p: { id: string }) => p.id === "maria");
-console.log("\nMaría hints:", maria.hints.map((h: { text: string }) => h.text));
-console.log("María gifts:", maria.gifts.map((g: { title: string; status: string }) => `${g.title} [${g.status}]`));
+const javier = acct.people.find((p: { id: string }) => p.id === "javier");
+console.log("\nJavier hints:", javier.hints.map((h: { text: string }) => h.text));
+console.log("Javier gifts:", javier.gifts.map((g: { title: string; status: string }) => `${g.title} [${g.status}]`));

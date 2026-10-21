@@ -42,7 +42,7 @@ export function useLiveAlexa() {
   const greet = useCallback(() => {
     fresh.current = true;
     setMsgs([{ id: newId(), kind: "bot", text: "Hi, I'm Alexa with GiftyQuest. Tell me something about someone you love, ask for gift ideas, or add someone new." }]);
-    setQuick(["Gift ideas for María", "New person, by voice", "Note that Dani just got into climbing"]);
+    setQuick(["Gift ideas for Javier", "New person, by voice", "Note that Dani just got into climbing"]);
   }, []);
 
   const check = useCallback(async () => {

@@ -167,7 +167,7 @@ export function useScriptedAlexa() {
     const args = [`person="${p.id}"`, max ? `max_usd=${max}` : "", theme !== "base" ? `theme="${theme}"` : ""].filter(Boolean).join(", ");
     await say(`Here are ${ideas.length} ideas for ${p.name}. Each one says why I picked it.`, [`get_profile("${p.id}")`, `suggest_gifts(${args})`]);
     push({ kind: "ideas", ideas });
-    setQuick(p.id === "maria" ? ["Something for the beach", "Buy the first one", "New person, by voice"] : ["Something less practical, more of a treat", "Buy the first one"]);
+    setQuick(p.id === "javier" ? ["Something for the beach", "Buy the first one", "New person, by voice"] : ["Something less practical, more of a treat", "Buy the first one"]);
   };
 
   const startInterview = useCallback(async () => {
@@ -284,9 +284,9 @@ export function useScriptedAlexa() {
     await store.reset();
     conv.current = { mode: "free", steps: STEPS, step: 0, pending: null, awaitTheme: null, lastIdeas: null };
     setMsgs([
-      { id: newId(), kind: "user", text: "Alexa, note that María loved the ceramic lamp at her sister's place." },
-      { id: newId(), kind: "bot", text: "Saved to María's hints.", tools: ['add_hint(person="maria")'] },
-      { id: newId(), kind: "bot", text: "Heads up: your anniversary with María is coming soon. Want a few ideas?", tools: ["get_upcoming_dates(days=30)"] },
+      { id: newId(), kind: "user", text: "Alexa, note that Javier loved the ceramic lamp at their sister's place." },
+      { id: newId(), kind: "bot", text: "Saved to Javier's hints.", tools: ['add_hint(person="javier")'] },
+      { id: newId(), kind: "bot", text: "Heads up: your anniversary with Javier is coming soon. Want a few ideas?", tools: ["get_upcoming_dates(days=30)"] },
     ]);
     setQuick(["Yes, show me ideas", "New person, by voice"]);
   }, [store]);
@@ -296,12 +296,12 @@ export function useScriptedAlexa() {
   useEffect(() => {
     if (started.current) return;
     started.current = true;
-    const maria = store.people.find((p) => p.id === "maria");
-    const next = maria && soonest(maria);
+    const javier = store.people.find((p) => p.id === "javier");
+    const next = javier && soonest(javier);
     setMsgs([
-      { id: newId(), kind: "user", text: "Alexa, note that María loved the ceramic lamp at her sister's place." },
-      { id: newId(), kind: "bot", text: "Saved to María's hints.", tools: ['add_hint(person="maria")'] },
-      { id: newId(), kind: "bot", text: `Heads up: your ${next ? next.type.toLowerCase() : "anniversary"} with María is ${next ? inDays(next.days) : "coming soon"}. Want a few ideas?`, tools: ["get_upcoming_dates(days=30)"] },
+      { id: newId(), kind: "user", text: "Alexa, note that Javier loved the ceramic lamp at their sister's place." },
+      { id: newId(), kind: "bot", text: "Saved to Javier's hints.", tools: ['add_hint(person="javier")'] },
+      { id: newId(), kind: "bot", text: `Heads up: your ${next ? next.type.toLowerCase() : "anniversary"} with Javier is ${next ? inDays(next.days) : "coming soon"}. Want a few ideas?`, tools: ["get_upcoming_dates(days=30)"] },
     ]);
     setQuick(["Yes, show me ideas", "New person, by voice"]);
   }, [store.people]);

@@ -33,7 +33,7 @@ export interface AlexaReply {
   memory: string;
 }
 
-const ICONS = ["armchair", "book-open", "camera", "candy", "chef-hat", "coffee", "dice-5", "disc-3", "flower-2", "gift", "lamp",
+const ICONS = ["armchair", "book-open", "camera", "candy", "chef-hat", "coffee", "dice-5", "disc-3", "dumbbell", "flower-2", "gift", "lamp",
   "moon", "package", "palette", "shovel", "soup", "sparkles", "sun", "ticket", "utensils", "watch", "waves"];
 
 const STORE_LANGUAGE: Record<string, string> = {
@@ -60,7 +60,7 @@ const showIdeasTool = (storeLanguage: string | null): Tool => ({
                 priceUsd: { type: "number" },
                 why: { type: "string", description: "One sentence: why it fits this person" },
                 icon: { type: "string", enum: ICONS },
-                basedOn: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 4, description: "Short labels of the signals combined, e.g. ['yoga', 'sage green', 'ceramic lamp hint']" },
+                basedOn: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 4, description: "Short labels of the signals combined, e.g. ['powerlifting', 'orange', 'ceramic lamp hint']" },
                 ...(storeLanguage ? { searchQuery: { type: "string", description: `Short Amazon search query for this idea, 2 to 5 words, in ${storeLanguage}, e.g. the product type plus one key attribute` } } : {}),
               },
               required: ["title", "priceUsd", "why", "icon", "basedOn", ...(storeLanguage ? ["searchQuery"] : [])],
@@ -89,9 +89,9 @@ Memory:
 Gift ideas, follow these steps in order:
 1. If the user has not said a budget earlier in this conversation, reply only with a short question asking for the budget, and stop. Do not call any tool yet.
 2. With a budget, call get_profile and suggest_gifts with maxUsd set to that budget.
-3. suggest_gifts returns ideaSeeds: one combination of profile signals per idea. Invent one specific, creative gift per seed that a thoughtful person would really buy, combining at least two of its signals; drop a signal that does not fit naturally. No gimmicks such as food-themed objects. Example: seed ["hint: loved the ceramic lamp at her sister's place", "hobby: Yoga", "color: Sage green"] could become "a sage green ceramic incense holder for her yoga corner".
+3. suggest_gifts returns ideaSeeds: one combination of profile signals per idea. Invent one specific, creative gift per seed that a thoughtful person would really buy, combining at least two of its signals; drop a signal that does not fit naturally. No gimmicks such as food-themed objects. Example: seed ["hint: loved the ceramic lamp at their sister's place", "hobby: Powerlifting", "color: Orange"] could become "a hand-stitched orange leather lifting belt".
 4. A hint is evidence of taste, not a shopping list: do not just suggest the item from the hint. Avoid dislikes, allergies and gifts already given.
-5. For each idea, write a one-sentence reason naming what you mixed, and put only the signals you actually used as short labels in basedOn (for example "ceramic lamp hint", "yoga", "sage green"). Then call show_gift_cards.
+5. For each idea, write a one-sentence reason naming what you mixed, and put only the signals you actually used as short labels in basedOn (for example "ceramic lamp hint", "powerlifting", "orange"). Then call show_gift_cards.
 6. If the user asks for something different ("more fun", "for the beach"), call suggest_gifts again for fresh seeds and adapt the ideas to the request.
 7. Say one sentence like "Here are three ideas on your screen" plus the one you would pick and why.
 

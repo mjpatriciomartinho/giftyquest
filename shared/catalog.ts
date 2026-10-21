@@ -19,16 +19,16 @@ export const amazonSearch = (q: string) => `https://www.amazon.com/s?k=${encodeU
 export type Theme = "base" | "summer" | "treat";
 
 const HANDMADE: Record<string, Partial<Record<Theme, Idea[]>>> = {
-  maria: {
+  javier: {
     base: [
-      { icon: "flower-2", title: "Sage green ceramic incense holder for her yoga corner", price: 38, why: "Mixes the ceramic lamp she loved in March with her yoga practice and her favorite color", query: "handmade ceramic incense holder sage green", basedOn: ["ceramic lamp hint", "yoga", "sage green"] },
-      { icon: "camera", title: "Film photo walk and darkroom workshop for two", price: 75, why: "Her light meter broke, so a guided photo walk with a loaner camera plus developing the roll together makes the anniversary an experience", query: "film photography darkroom workshop", basedOn: ["film photography", "light meter hint", "anniversary"] },
-      { icon: "soup", title: "Handmade ceramic ramen bowls, set of two", price: 64, why: "Her love of ramen in the handmade ceramic style she admired, for two, like your anniversary", query: "handmade ceramic ramen bowl set of two", basedOn: ["ramen", "ceramic lamp hint", "anniversary"] },
+      { icon: "dumbbell", title: "Orange leather lifting belt, hand-stitched", price: 69, why: "Mixes their powerlifting with their favorite color, in the handmade style of the ceramic lamp they loved in March", query: "leather powerlifting belt orange", basedOn: ["powerlifting", "orange", "ceramic lamp hint"] },
+      { icon: "camera", title: "Film photo walk and darkroom workshop for two", price: 75, why: "Their light meter broke, so a guided photo walk with a loaner camera plus developing the roll together makes the anniversary an experience", query: "film photography darkroom workshop", basedOn: ["film photography", "light meter hint", "anniversary"] },
+      { icon: "dice-5", title: "Handmade wooden medieval chess set", price: 58, why: "Age of Empires on the table: castles, knights and a game for two, made by hand like the lamp they admired", query: "handmade wooden medieval chess set", basedOn: ["Age of Empires", "ceramic lamp hint", "anniversary"] },
     ],
     summer: [
-      { icon: "sun", title: "Linen beach blanket in sage", price: 48, why: "Beach days plus sage green, natural linen", query: "linen beach blanket sage" },
+      { icon: "sun", title: "Linen beach blanket in orange", price: 48, why: "Beach days plus their favorite color, natural linen", query: "linen beach blanket orange" },
       { icon: "camera", title: "Waterproof single-use film cameras, 3 pack", price: 39, why: "Film photography that survives the beach", query: "waterproof disposable film camera 3 pack" },
-      { icon: "waves", title: "Sunrise beach yoga class pass", price: 55, why: "Yoga and the beach in one, and her 2025 yoga gift was a hit", query: "beach yoga class gift card" },
+      { icon: "dumbbell", title: "Sandbag training kit for beach workouts", price: 45, why: "Powerlifting and beach days in one, and their 2025 powerlifting gift was a hit", query: "sandbag training kit" },
     ],
   },
   carmen: {
@@ -63,7 +63,7 @@ function generic(p: Person, theme: Theme): Idea[] {
 }
 
 export function ideasFor(p: Person, theme: Theme, maxUsd: number | null): Idea[] {
-  const key = p.id === "maria" ? "maria" : p.name === "Carmen" ? "carmen" : null;
+  const key = p.id === "javier" ? "javier" : p.name === "Carmen" ? "carmen" : null;
   const set = (key && (HANDMADE[key][theme] ?? HANDMADE[key].base)) || generic(p, theme);
   return maxUsd ? set.filter((i) => i.price <= maxUsd) : set;
 }
@@ -80,7 +80,7 @@ export interface TrendingItem {
 
 export const TRENDING: TrendingItem[] = [
   { icon: "camera", title: "Instant film camera", price: 69, cats: ["her", "him"], note: "Prints a photo in seconds. Big again this year.", matches: ["film", "photo"] },
-  { icon: "flower-2", title: "Cork yoga block and strap set", price: 24, cats: ["her", "under50"], note: "Natural cork, no plastic.", matches: ["yoga"] },
+  { icon: "dumbbell", title: "Lifting chalk and wrist wraps set", price: 24, cats: ["her", "him", "under50"], note: "Better grip and steadier wrists on heavy lifts.", matches: ["powerlifting", "lifting"] },
   { icon: "soup", title: "Ramen kit of the month, 3 boxes", price: 45, cats: ["her", "him", "under50"], note: "Noodles, broth and toppings from small makers.", matches: ["ramen"] },
   { icon: "shovel", title: "Ergonomic garden tool set", price: 45, cats: ["mom", "under50"], note: "Soft grips that are kind to hands and wrists.", matches: ["garden"] },
   { icon: "dice-5", title: "Cooperative board game for game night", price: 30, cats: ["him", "under50"], note: "Everyone wins or loses together.", matches: ["board game"] },

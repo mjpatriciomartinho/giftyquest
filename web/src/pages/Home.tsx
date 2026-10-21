@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import {
-  ArrowRight, Ban, CalendarHeart, CircleCheck, Flower2, Gift, Heart, Lock, Mic, NotebookPen, RefreshCcw, ShoppingCart, Sparkles,
+  ArrowRight, Ban, CalendarHeart, CircleCheck, Dumbbell, Gift, Heart, Lock, Mic, NotebookPen, RefreshCcw, ShoppingCart, Sparkles,
 } from "lucide-react";
 
 const PAINS = [
@@ -11,7 +11,7 @@ const PAINS = [
 
 const FEATURES = [
   { icon: Mic, title: "A two-minute voice interview", text: "Alexa asks about their favorite artists, food, hobbies and what they can't stand, and follows up on your answers.", tone: "bg-pink-soft text-pink" },
-  { icon: NotebookPen, title: "Hints with a date", text: "“Alexa, note that María loved that lamp.” Every hint keeps when you heard it and how you saved it.", tone: "bg-lemon-soft text-lemon-ink" },
+  { icon: NotebookPen, title: "Hints with a date", text: "“Alexa, note that Javier loved that lamp.” Every hint keeps when you heard it and how you saved it.", tone: "bg-lemon-soft text-lemon-ink" },
   { icon: Sparkles, title: "Ideas you wouldn't have thought of", text: "Alexa mixes what you saved, a hobby, a color, a passing hint, into new ideas, and tells you what it combined. It asks your budget each time.", tone: "bg-lilac-soft text-lilac" },
   { icon: ShoppingCart, title: "Buy in the conversation", text: "Pick an idea, say yes, done. Nothing is ordered without your clear yes.", tone: "bg-peach-soft text-peach-ink" },
   { icon: RefreshCcw, title: "It learns every year", text: "Tell Alexa how the gift went. Loved, liked or not quite: next time the ideas get better.", tone: "bg-mint-soft text-mint" },
@@ -147,7 +147,7 @@ export function Home() {
       <section className="grid justify-items-center gap-5 rounded-[32px] bg-pink-soft px-6 py-12 text-center">
         <Gift className="size-10 text-pink" />
         <h2 className="max-w-[20ch] font-display text-3xl font-semibold sm:text-4xl">The next birthday is closer than you think</h2>
-        <p className="max-w-[48ch] text-muted">Try GiftyQuest with María and Dani, our example people, or add someone of your own by voice.</p>
+        <p className="max-w-[48ch] text-muted">Try GiftyQuest with Javier and Dani, our example people, or add someone of your own by voice.</p>
         <Link to="/app" className="btn rounded-xl bg-pink px-5 py-3 text-base text-white hover:bg-pink/90">Try the demo <ArrowRight className="size-4" /></Link>
       </section>
     </div>
@@ -157,44 +157,44 @@ export function Home() {
 /** Illustration built from the real UI pieces: a card, a hint, Alexa and an idea. */
 function HeroScene() {
   return (
-    <div className="relative mx-auto grid w-full max-w-[520px] gap-3" aria-label="Example: María's card, a hint and an idea from Alexa">
+    <div className="relative mx-auto grid w-full max-w-[520px] gap-3" aria-label="Example: Javier's card, a hint and an idea from Alexa">
       <div className="grid gap-4 rounded-[28px] bg-card p-5">
         <div className="flex items-center gap-3">
-          <span className="grid size-12 place-items-center rounded-full bg-peach-soft font-display text-xl font-semibold text-peach-ink">M</span>
+          <span className="grid size-12 place-items-center rounded-full bg-peach-soft font-display text-xl font-semibold text-peach-ink">J</span>
           <div className="min-w-0">
-            <b className="block font-display text-2xl font-semibold leading-none">María</b>
-            <span className="text-sm text-muted">Partner · “my girlfriend”</span>
+            <b className="block font-display text-2xl font-semibold leading-none">Javier</b>
+            <span className="text-sm text-muted">Partner · “my partner”</span>
           </div>
           <span className="ml-auto flex items-center gap-1.5 rounded-xl bg-peach-soft px-3 py-1.5 text-xs font-bold text-peach-ink">
             <CalendarHeart className="size-3.5" />Anniversary in 25 days
           </span>
         </div>
         <div className="flex flex-wrap gap-1.5 rounded-2xl bg-mint-soft p-3" style={{ ["--tag-color" as string]: "var(--color-mint)", ["--block-bg" as string]: "var(--color-mint-soft)" }}>
-          <span className="gift-tag"><Heart className="size-3" />Yoga</span>
-          <span className="gift-tag">Film photography</span>
-          <span className="gift-tag">Sage green</span>
-          <span className="gift-tag">Ramen</span>
+          <span className="gift-tag"><Heart className="size-3" />Powerlifting</span>
+          <span className="gift-tag">Age of Empires</span>
+          <span className="gift-tag">The Offspring</span>
+          <span className="gift-tag">Orange</span>
           <span className="gift-tag text-muted line-through decoration-muted/50"><Ban className="size-3" />Perfume</span>
         </div>
         <div className="sticky-note w-[230px] max-w-full rounded-[4px_4px_16px_4px] bg-lemon px-4 pb-2 pt-3 text-lemon-ink">
-          <p className="font-hand text-[24px] font-bold leading-[1.1]">Loved the ceramic lamp at her sister's place</p>
+          <p className="font-hand text-[24px] font-bold leading-[1.1]">Loved the ceramic lamp at their sister's place</p>
           <small className="mt-1 flex items-center gap-1 text-[11px] opacity-80"><Mic className="size-3" />2026-03-12 · told Alexa</small>
         </div>
       </div>
 
-      <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-pink-soft px-4 py-2.5">Alexa, gift ideas for María, under $80?</div>
+      <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-pink-soft px-4 py-2.5">Alexa, gift ideas for Javier, under $80?</div>
       <div className="max-w-[90%] rounded-2xl rounded-bl-md bg-sky-soft px-4 py-2.5">
-        Here are three ideas. I'd pick the sage green ceramic incense holder for her yoga corner: it mixes the lamp she loved in March, her yoga and her favorite color.
+        Here are three ideas. I'd pick the orange leather lifting belt: it mixes their powerlifting, their favorite color and the handmade style of the lamp they loved in March.
       </div>
       <div className="grid grid-cols-[48px_minmax(0,1fr)] gap-3 rounded-2xl bg-card p-3.5">
-        <span className="grid size-12 place-items-center rounded-xl bg-peach-soft text-peach-ink"><Flower2 className="size-6" /></span>
+        <span className="grid size-12 place-items-center rounded-xl bg-peach-soft text-peach-ink"><Dumbbell className="size-6" /></span>
         <div className="min-w-0">
-          <b className="block leading-tight">Sage green ceramic incense holder for her yoga corner · <span className="text-pink">$38</span></b>
+          <b className="block leading-tight">Orange leather lifting belt, hand-stitched · <span className="text-pink">$69</span></b>
           <span className="text-[13px] text-muted">Why: a new idea built from three things you told Alexa</span>
           <div className="mt-1.5 flex flex-wrap gap-1" style={{ ["--tag-color" as string]: "var(--color-lilac)", ["--block-bg" as string]: "var(--color-card)" }}>
             <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">ceramic lamp hint</span>
-            <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">yoga</span>
-            <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">sage green</span>
+            <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">powerlifting</span>
+            <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">orange</span>
           </div>
           <div className="mt-2 flex items-center gap-1.5 text-[13px] font-bold text-mint"><CircleCheck className="size-4" />Ordered after your yes</div>
         </div>

@@ -3,7 +3,7 @@ import { ContentPage, H2 } from "./Content";
 
 const STEPS = [
   ["Tell Alexa about them", "A two-minute voice interview: favorite artists, food, hobbies, what they can't stand.", "bg-pink-soft"],
-  ["Drop hints anytime", "“Alexa, note that María loved that lamp.” Hints land on their card with the date.", "bg-mint-soft"],
+  ["Drop hints anytime", "“Alexa, note that Javier loved that lamp.” Hints land on their card with the date.", "bg-mint-soft"],
   ["Get ideas with reasons", "Before a birthday, Alexa asks your budget and suggests gifts, each with the reason it fits.", "bg-sky-soft"],
   ["It learns every year", "Tell Alexa how the gift went. Next time, the ideas get better.", "bg-lemon-soft"],
 ];

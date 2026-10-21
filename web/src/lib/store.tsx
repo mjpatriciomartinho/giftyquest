@@ -35,7 +35,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [people, setPeople] = useState<Person[]>([]);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentId, setCurrentId] = useState("maria");
+  const [currentId, setCurrentId] = useState("javier");
   const [flashed, setFlashed] = useState<Set<string>>(new Set());
   const peopleRef = useRef(people);
   peopleRef.current = people;
@@ -101,7 +101,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!accountId) return;
     const fresh = await api.reset(accountId);
     setPeople((peopleRef.current = fresh));
-    setCurrentId("maria");
+    setCurrentId("javier");
   }, [accountId]);
 
   const refresh = useCallback(async (force = false): Promise<Person[] | null> => {
