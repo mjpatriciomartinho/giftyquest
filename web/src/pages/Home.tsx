@@ -181,21 +181,29 @@ function HeroScene() {
         </div>
       </div>
 
-      <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-pink-soft px-4 py-2.5">Alexa, gift ideas for Javier, under $80?</div>
-      <div className="max-w-[90%] rounded-2xl rounded-bl-md bg-sky-soft px-4 py-2.5">
-        Here are three ideas. I'd pick the orange leather lifting belt: it mixes their powerlifting, their favorite color and the handmade style of the lamp they loved in March.
-      </div>
-      <div className="grid grid-cols-[48px_minmax(0,1fr)] gap-3 rounded-2xl bg-card p-3.5">
-        <span className="grid size-12 place-items-center rounded-xl bg-peach-soft text-peach-ink"><Dumbbell className="size-6" /></span>
-        <div className="min-w-0">
-          <b className="block leading-tight">Orange leather lifting belt, hand-stitched · <span className="text-pink">$69</span></b>
-          <span className="text-[13px] text-muted">Why: a new idea built from three things you told Alexa</span>
-          <div className="mt-1.5 flex flex-wrap gap-1" style={{ ["--tag-color" as string]: "var(--color-lilac)", ["--block-bg" as string]: "var(--color-card)" }}>
-            <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">ceramic lamp hint</span>
-            <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">powerlifting</span>
-            <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">orange</span>
+      <div className="overflow-hidden rounded-[28px] bg-card">
+        <div className="flex items-center gap-2.5 bg-sky-soft px-4 py-3">
+          <div className="size-7 shrink-0 rounded-full border-4 border-sky bg-card" />
+          <b className="font-display text-[17px] font-semibold">Alexa+</b>
+        </div>
+        <div className="grid gap-2.5 p-3.5">
+          <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-md bg-pink-soft px-4 py-2.5">Alexa, gift ideas for Javier, under $80?</div>
+          <div className="max-w-[90%] rounded-2xl rounded-bl-md bg-sky-soft px-4 py-2.5">
+            Here are three ideas. I'd pick the orange leather lifting belt: it mixes their powerlifting, their favorite color and the handmade style of the lamp they loved in March.
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[13px] font-bold text-mint"><CircleCheck className="size-4" />Ordered after your yes</div>
+          <div className="grid grid-cols-[48px_minmax(0,1fr)] gap-3 rounded-2xl border-2 border-line p-3.5">
+            <span className="grid size-12 place-items-center rounded-xl bg-peach-soft text-peach-ink"><Dumbbell className="size-6" /></span>
+            <div className="min-w-0">
+              <b className="block leading-tight">Orange leather lifting belt, hand-stitched · <span className="text-pink">$69</span></b>
+              <span className="text-[13px] text-muted">Why: a new idea built from three things you told Alexa</span>
+              <div className="mt-1.5 flex flex-wrap gap-1" style={{ ["--tag-color" as string]: "var(--color-lilac)", ["--block-bg" as string]: "var(--color-card)" }}>
+                <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">ceramic lamp hint</span>
+                <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">powerlifting</span>
+                <span className="gift-tag bg-lilac-soft py-0.5 text-[11.5px]">orange</span>
+              </div>
+              <div className="mt-2 flex items-center gap-1.5 text-[13px] font-bold text-mint"><CircleCheck className="size-4" />Ordered after your yes</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
