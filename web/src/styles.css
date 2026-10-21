@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+/* Flat pastel, light only. No shadows except the logo mark. */
+@theme {
+  --color-paper: #fdf0f6;
+  --color-card: #ffffff;
+  --color-ink: #3a2f4b;
+  --color-muted: #877c97;
+  --color-line: #f3e3ee;
+  --color-pink: #ff5c9d;
+  --color-pink-soft: #ffe6f1;
+  --color-mint: #12a07a;
+  --color-mint-soft: #ddf8ee;
+  --color-lilac: #7c5ce6;
+  --color-lilac-soft: #efeaff;
+  --color-lemon: #fff4bf;
+  --color-lemon-soft: #fff9dc;
+  --color-lemon-ink: #6b5a12;
+  --color-sky: #1b8fd8;
+  --color-sky-soft: #e3f3ff;
+  --color-peach: #ffb37a;
+  --color-peach-soft: #ffece0;
+  --color-peach-ink: #c2571a;
+  --color-dove: #f5f1f7;
+
+  --font-display: "Fredoka", "Avenir Next Rounded", "Arial Rounded MT Bold", sans-serif;
+  --font-body: "Nunito", "Avenir Next", "Segoe UI", sans-serif;
+  --font-hand: "Caveat", "Bradley Hand", "Segoe Print", cursive;
+}
+
+@layer base {
+  html { color-scheme: light; }
+  body { @apply bg-paper text-ink font-body antialiased; font-size: 15px; line-height: 1.5; }
+  :focus-visible { outline: 3px solid var(--color-lilac); outline-offset: 2px; }
+  h1, h2, h3, h4 { text-wrap: balance; }
+}
+
+@layer components {
+  /* gift tag: rectangle with a cut point and a string hole, used for likes and similar lists */
+  .gift-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--color-card);
+    color: var(--tag-color, var(--color-ink));
+    border-radius: 2px 6px 6px 2px;
+    clip-path: polygon(9px 0, 100% 0, 100% 100%, 9px 100%, 0 50%);
+  }
+  .gift-tag::before {
+    content: "";
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    margin-top: -2.5px;
+    border-radius: 50%;
+    background: var(--block-bg, var(--color-paper));
+  }
+  .sticky-note { transform: rotate(-1.5deg); }
+  .sticky-note:nth-child(even) { transform: rotate(1.5deg); }
+  .flash { animation: flash 1.6s ease-out; }
+  .field {
+    @apply w-full rounded-xl border-2 border-line bg-card px-3 py-2 text-ink;
+  }
+  .btn {
+    @apply inline-flex items-center gap-1.5 rounded-[10px] px-3 py-1.5 text-[13px] font-bold transition-colors disabled:cursor-default disabled:opacity-60;
+  }
+}
+
+@keyframes flash {
+  0% { box-shadow: 0 0 0 6px var(--color-lemon); background-color: var(--color-lemon); }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash { animation: none; }
+  .sticky-note, .sticky-note:nth-child(even) { transform: none; }
+}

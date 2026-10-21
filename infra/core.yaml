@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  GiftyQuest core resources that need IAM permissions: the Lambda role, the Lambda function with
+  its public URL, and the DynamoDB table. Launch once with an admin user. Code updates and the web
+  app are deployed afterwards by infra/deploy.sh without IAM permissions.
+
+Parameters:
+  Model:
+    Type: String
+    Default: eu.amazon.nova-2-lite-v1:0
+  JudgeCodeParameter:
+    Type: String
+    Default: /servikaki/secrets/giftyquest.env
+  CreatorsParameter:
+    Type: String
+    Default: /servikaki/secrets/amazon-creators.env
+
+Resources:
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: giftyquest-accounts
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions: [{ AttributeName: id, AttributeType: S }]
+      KeySchema: [{ AttributeName: id, KeyType: HASH }]
+      TimeToLiveSpecification: { AttributeName: expiresAt, Enabled: true }
+
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: giftyquest-lambda-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: lambda.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: giftyquest-least-privilege
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: Accounts
+                Effect: Allow
+                Action: [dynamodb:GetItem, dynamodb:PutItem]
+                Resource: !GetAtt Table.Arn
+              - Sid: Nova
+                Effect: Allow
+                Action: [bedrock:InvokeModel, bedrock:Converse]
+                Resource:
+                  - !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${Model}
+                  - arn:aws:bedrock:*::foundation-model/amazon.nova-*
+              - Sid: Voice
+                Effect: Allow
+                Action: polly:SynthesizeSpeech
+                Resource: "*"
+              - Sid: Secrets
+                Effect: Allow
+                Action: ssm:GetParameter
+                Resource:
+                  - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${JudgeCodeParameter}
+                  - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${CreatorsParameter}
+              - Sid: DecryptSecretsViaSsm
+                Effect: Allow
+                Action: kms:Decrypt
+                Resource: "*"
+                Condition:
+                  StringEquals: { kms:ViaService: !Sub "ssm.${AWS::Region}.amazonaws.com" }
+
+  Function:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: giftyquest-api
+      Description: GiftyQuest REST API, MCP server and simulated Alexa
+      Runtime: nodejs22.x
+      Architectures: [arm64]
+      Handler: index.handler
+      MemorySize: 1024
+      Timeout: 60
+      Role: !GetAtt Role.Arn
+      Environment:
+        Variables:
+          GQ_TABLE: !Ref Table
+          GQ_MODEL: !Ref Model
+          GQ_BEDROCK_REGION: !Ref AWS::Region
+          GQ_JUDGE_CODE_SSM: !Ref JudgeCodeParameter
+          GQ_CREATORS_SSM: !Ref CreatorsParameter
+      Code:
+        # Placeholder; infra/deploy.sh uploads the real bundle.
+        ZipFile: |
+          exports.handler = async () => ({ statusCode: 503, body: "GiftyQuest is being deployed" });
+
+  FunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !Ref Function
+      AuthType: NONE
+
+  PublicUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Function
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
+  PublicInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Function
+      Action: lambda:InvokeFunction
+      Principal: "*"
+      InvokedViaFunctionUrl: true
+
+Outputs:
+  ApiUrl:
+    Value: !GetAtt FunctionUrl.FunctionUrl
+  TableName:
+    Value: !Ref Table
