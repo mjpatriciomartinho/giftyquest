@@ -64,8 +64,8 @@ Server settings (environment variables):
 | `GQ_BEDROCK_REGION` | `eu-west-1` | Bedrock region |
 | `GQ_JUDGE_CODE` | empty | When set, the live Alexa needs this code (sent as `x-judge-code`). Empty means open, for local development |
 | `GQ_TURNS_PER_DAY` | `120` | Live Alexa turns per demo account per day |
-| `GQ_CREATORS_SSM` | `/servikaki/secrets/amazon-creators.env` | SSM parameter with the Amazon Creators API credentials |
-| `GQ_ASSOCIATE_TAG` | `limni-21` | Amazon Associates tag for product and search links |
+| `GQ_CREATORS_SSM` | `/giftyquest/amazon-creators.env` | SSM parameter with the Amazon Creators API credentials |
+| `GQ_ASSOCIATE_TAG` | empty | Amazon Associates tag for product and search links (none when empty) |
 | `GQ_MARKETPLACE` | `www.amazon.es` | Amazon store used for products |
 
 ## Real Amazon products

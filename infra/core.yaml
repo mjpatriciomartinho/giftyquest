@@ -10,10 +10,10 @@ Parameters:
     Default: eu.amazon.nova-2-lite-v1:0
   JudgeCodeParameter:
     Type: String
-    Default: /servikaki/secrets/giftyquest.env
+    Default: /giftyquest/judge-code
   CreatorsParameter:
     Type: String
-    Default: /servikaki/secrets/amazon-creators.env
+    Default: /giftyquest/amazon-creators.env
 
 Resources:
   Table:

@@ -1,5 +1,5 @@
 // Real Amazon products through the Amazon Associates Creators API (successor of PA-API 5).
-// Credentials come from AWS SSM at runtime (/servikaki/secrets/amazon-creators.env); nothing is
+// Credentials come from AWS SSM at runtime (/giftyquest/amazon-creators.env); nothing is
 // written to disk or committed.
 import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm";
 
@@ -21,7 +21,7 @@ interface Config {
   marketplace: string; // e.g. www.amazon.es
 }
 
-const SSM_NAME = process.env.GQ_CREATORS_SSM ?? "/servikaki/secrets/amazon-creators.env";
+const SSM_NAME = process.env.GQ_CREATORS_SSM ?? "/giftyquest/amazon-creators.env";
 const CATALOG = "https://creatorsapi.amazon/catalog/v1";
 
 // Token endpoints by credential version (3.x: Login with Amazon, 2.x: Cognito).
@@ -52,9 +52,9 @@ async function loadConfig(): Promise<Config | null> {
   let env: Record<string, string> = process.env as Record<string, string>;
   if (!env.CREATORS_CREDENTIAL_ID) {
     try {
-      // Locally the secrets live under the servikaki-secrets profile; on Lambda the role is used.
-      const local = !process.env.AWS_LAMBDA_FUNCTION_NAME;
-      const ssm = new SSMClient({ region: "eu-west-1", ...(local ? { profile: process.env.GQ_SECRETS_PROFILE ?? "servikaki-secrets" } : {}) });
+      // Locally the default AWS profile is used (or GQ_SECRETS_PROFILE); on Lambda the role is used.
+      const profile = process.env.AWS_LAMBDA_FUNCTION_NAME ? undefined : process.env.GQ_SECRETS_PROFILE;
+      const ssm = new SSMClient({ region: "eu-west-1", ...(profile ? { profile } : {}) });
       const res = await ssm.send(new GetParameterCommand({ Name: SSM_NAME, WithDecryption: true }));
       env = parseEnv(res.Parameter?.Value ?? "");
     } catch (e) {
@@ -67,7 +67,7 @@ async function loadConfig(): Promise<Config | null> {
     id: pick("CREATORS_CREDENTIAL_ID", "AMZ_CREATORS_CREDENTIAL_ID"),
     secret: pick("CREATORS_CREDENTIAL_SECRET", "AMZ_CREATORS_CREDENTIAL_SECRET"),
     version: pick("CREATORS_VERSION", "AMZ_CREATORS_VERSION"), // optional: detected below when missing
-    tag: pick("ASSOCIATE_TAG", "AMZ_ASSOCIATE_TAG") || (process.env.GQ_ASSOCIATE_TAG ?? "limni-21"),
+    tag: pick("ASSOCIATE_TAG", "AMZ_ASSOCIATE_TAG") || (process.env.GQ_ASSOCIATE_TAG ?? ""),
     marketplace: pick("MARKETPLACE", "AMZ_MARKETPLACE") || (process.env.GQ_MARKETPLACE ?? "www.amazon.es"),
   };
   if (!c.id || !c.secret) {
@@ -171,7 +171,8 @@ export async function searchProduct(query: string, maxPrice: number | null): Pro
 
 /** Amazon search page for a query in the configured store, with the affiliate tag. Works without API eligibility. */
 export function taggedSearchUrl(c: { marketplace: string; tag: string }, query: string) {
-  return `https://${c.marketplace}/s?k=${encodeURIComponent(query)}&tag=${encodeURIComponent(c.tag)}`;
+  const tag = c.tag ? `&tag=${encodeURIComponent(c.tag)}` : "";
+  return `https://${c.marketplace}/s?k=${encodeURIComponent(query)}${tag}`;
 }
 
 /** Search several queries at once; a failure or slow answer just leaves that idea without a product. */
