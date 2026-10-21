@@ -4,9 +4,9 @@ import {
 } from "lucide-react";
 
 const PAINS = [
-  ["She mentioned it in March.", "Now it's December and you can't remember what it was."],
-  ["Another candle?", "You gave her that last year. And the year before."],
-  ["Something with plants, maybe?", "You know them well. You just can't recall the details on the spot."],
+  ["Another candle?", "You know them well, but when the date comes, your mind goes blank."],
+  ["They already have everything.", "The obvious ideas are taken. You need one they'd never expect."],
+  ["Top 10 gifts for him.", "Gift guides are written for everyone, so they fit no one in particular."],
 ];
 
 const FEATURES = [
@@ -32,16 +32,15 @@ export function Home() {
       <section className="grid items-center gap-10 pt-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:pt-10">
         <div className="grid content-start gap-6">
           <h1 className="font-display text-[clamp(40px,6vw,68px)] font-semibold leading-[1.02] tracking-[-0.01em]">
-            Remember what they{" "}
+            Discover gifts they'll actually{" "}
             <span className="relative inline-block font-hand text-[1.18em] font-bold text-pink">
-              said
+              love
               <svg viewBox="0 0 120 12" className="absolute -bottom-1 left-0 w-full" aria-hidden><path d="M2 8 C 30 2, 70 2, 118 7" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round" /></svg>
-            </span>{" "}
-            they wanted.
+            </span>.
           </h1>
           <p className="max-w-[52ch] text-lg text-muted">
-            GiftyQuest is the gift memory Alexa can read. Tell Alexa about the people you love, drop hints the moment you hear them,
-            and get gift ideas that come with a reason.
+            Keeping a gift list is easy. Knowing what to give is the hard part. Tell Alexa what makes each person tick, from their
+            hobbies to a passing comment, and get fresh ideas you'd never have thought of, each with the reason it fits them.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link to="/app" className="btn rounded-xl bg-pink px-5 py-3 text-base text-white hover:bg-pink/90">
