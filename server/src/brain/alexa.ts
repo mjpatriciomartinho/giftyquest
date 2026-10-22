@@ -152,6 +152,22 @@ function steer(previous: Message[], message: string): string {
   return message;
 }
 
+// Kinds of gifts Amazon cannot sell or that anyone would think of first. Checked in code because
+// the model does not always follow these rules.
+const NOT_A_PRODUCT = /\b(tickets?|concert|festival pass|gift ?card|voucher|steam key|digital code|download code|subscription|membership|experience|workshop|class(es)?|lessons?|service)\b/i;
+
+/** Ideas that break the rules for this person: their favorite artists' merch, or not a product. */
+function rejectedIdeas(ideas: GiftIdeaCard[], profile: string): string[] {
+  let artists: string[] = [];
+  try { artists = (JSON.parse(profile).likes?.music ?? []) as string[]; } catch { /* no profile */ }
+  return ideas.flatMap((i) => {
+    const artist = artists.find((a) => i.title.toLowerCase().includes(a.toLowerCase()));
+    if (artist) return [`"${i.title}" is ${artist} merch, the obvious pick`];
+    if (NOT_A_PRODUCT.test(i.title)) return [`"${i.title}" is not a physical product sold on Amazon`];
+    return [];
+  });
+}
+
 const READ_ONLY = new Set(["list_people", "get_profile", "get_upcoming_dates", "suggest_gifts", "profile_gaps"]);
 const SAID_YES = /\b(yes|yeah|yep|sure|confirm|order it|go ahead|do it|buy it|s[ií]|vale)\b/i;
 const needsYes = (tool: string, args: Record<string, unknown>) =>
@@ -227,6 +243,13 @@ export async function runAlexa(repo: AccountRepo, accountId: string, message: st
         if (use.name === "show_gift_cards") {
           const a = args as { person: string; ideas: GiftIdeaCard[] };
           const ideas = (a.ideas ?? []).map((i) => ({ ...i, icon: ICONS.includes(i.icon) ? i.icon : "gift" }));
+          const rejected = rejectedIdeas(ideas, asText(await client.callTool({ name: "get_profile", arguments: { person: a.person } })));
+          if (rejected.length) {
+            // Hard rule: replace these ideas before anything is shown.
+            reply.tools.push({ name: use.name, args, isError: true });
+            results.push({ toolResult: { toolUseId: use.toolUseId, content: [{ text: `Not shown. Replace these ideas with physical products sold on Amazon that are not the obvious pick, then call show_gift_cards again: ${rejected.join("; ")}.` }], status: "error" } });
+            continue;
+          }
           // Match every invented idea with a real Amazon product (affiliate link), when the store is configured.
           if (store) {
             const found = await findProducts(ideas.map((i) => i.searchQuery || i.title), budget);
