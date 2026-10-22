@@ -14,6 +14,13 @@ Parameters:
   CreatorsParameter:
     Type: String
     Default: /giftyquest/amazon-creators.env
+  BedrockRole:
+    Type: String
+    Default: ""
+    Description: Optional role in another account to call Bedrock through, when this account has no Bedrock access
+
+Conditions:
+  CrossAccountBedrock: !Not [!Equals [!Ref BedrockRole, ""]]
 
 Resources:
   Table:
@@ -52,6 +59,13 @@ Resources:
                 Resource:
                   - !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/${Model}
                   - arn:aws:bedrock:*::foundation-model/amazon.nova-*
+              - !If
+                - CrossAccountBedrock
+                - Sid: NovaCrossAccount
+                  Effect: Allow
+                  Action: sts:AssumeRole
+                  Resource: !Ref BedrockRole
+                - !Ref AWS::NoValue
               - Sid: Voice
                 Effect: Allow
                 Action: polly:SynthesizeSpeech
@@ -87,6 +101,7 @@ Resources:
           GQ_BEDROCK_REGION: !Ref AWS::Region
           GQ_JUDGE_CODE_SSM: !Ref JudgeCodeParameter
           GQ_CREATORS_SSM: !Ref CreatorsParameter
+          GQ_BEDROCK_ROLE: !Ref BedrockRole
       Code:
         # Placeholder; infra/deploy.sh uploads the real bundle.
         ZipFile: |

@@ -55,6 +55,9 @@ export const live = {
   /** fresh=true starts a new conversation; otherwise the server continues the saved one. */
   say: (accountId: string, message: string, fresh: boolean) =>
     req<LiveReply>(`/api/accounts/${accountId}/alexa`, { method: "POST", headers: { "x-judge-code": judgeCode.get() }, body: JSON.stringify({ message, fresh }) }),
+  /** The user opened Alexa: she speaks first with the briefing, in a new conversation. */
+  open: (accountId: string) =>
+    req<LiveReply>(`/api/accounts/${accountId}/alexa`, { method: "POST", headers: { "x-judge-code": judgeCode.get() }, body: JSON.stringify({ opened: true }) }),
 };
 
 export const mcpUrl = (accountId: string) => `${location.origin}/mcp/${accountId}`;

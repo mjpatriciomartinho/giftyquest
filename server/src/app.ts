@@ -7,7 +7,7 @@ import type { Person } from "../../shared/types";
 import { seedPeople } from "../../shared/seed";
 import * as gifts from "./core/gifts";
 import { buildMcpServer } from "./mcp";
-import { MODEL_ID, runAlexa } from "./brain/alexa";
+import { MODEL_ID, OPENED, runAlexa } from "./brain/alexa";
 import { allowLiveTurn, judgeCodeReady, liveAccess } from "./brain/gate";
 import type { AccountRepo } from "./store/repo";
 import { withAccount } from "./store/lock";
@@ -71,7 +71,9 @@ export function createApp(repo: AccountRepo) {
     const accountId = c.req.param("id");
     if (!(await repo.get(accountId))) return c.json({ error: "Unknown or expired account." }, 404);
     if (!allowLiveTurn(accountId)) return c.json({ error: "rate_limited" }, 429);
-    const { message, fresh } = (await c.req.json()) as { message?: string; fresh?: boolean };
+    const { message, fresh, opened } = (await c.req.json()) as { message?: string; fresh?: boolean; opened?: boolean };
+    // opened: the user just opened Alexa, so she speaks first with the briefing (new conversation).
+    if (opened === true) return c.json(await runAlexa(repo, accountId, OPENED, true));
     if (!message || typeof message !== "string" || message.length > 1000) return c.json({ error: "Invalid message." }, 400);
     return c.json(await runAlexa(repo, accountId, message, fresh === true));
   });

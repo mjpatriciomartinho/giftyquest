@@ -5,6 +5,7 @@ import {
   BedrockRuntimeClient, ConverseCommand,
   type ContentBlock, type Message, type Tool, type ToolResultContentBlock,
 } from "@aws-sdk/client-bedrock-runtime";
+import { fromTemporaryCredentials } from "@aws-sdk/credential-providers";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { todayIso } from "../../../shared/dates";
@@ -17,7 +18,12 @@ export const MODEL_ID = process.env.GQ_MODEL ?? "eu.amazon.nova-2-lite-v1:0";
 const REGION = process.env.GQ_BEDROCK_REGION ?? "eu-west-1";
 const MAX_STEPS = 12;
 
-const bedrock = new BedrockRuntimeClient({ region: REGION });
+// GQ_BEDROCK_ROLE: call Bedrock through a role in another AWS account (the one with Bedrock access).
+const BEDROCK_ROLE = process.env.GQ_BEDROCK_ROLE;
+const bedrock = new BedrockRuntimeClient({
+  region: REGION,
+  ...(BEDROCK_ROLE ? { credentials: fromTemporaryCredentials({ params: { RoleArn: BEDROCK_ROLE, RoleSessionName: "giftyquest-alexa" } }) } : {}),
+});
 
 export interface Turn { role: "user" | "assistant"; text: string }
 export interface GiftIdeaCard { title: string; priceUsd: number; why: string; icon: string; basedOn?: string[]; searchQuery?: string; product?: AmazonProduct | null; searchUrl?: string }
@@ -73,7 +79,7 @@ const showIdeasTool = (storeLanguage: string | null): Tool => ({
   },
 });
 
-function systemPrompt(people: string, interview: string, explore = "") {
+function systemPrompt(people: string, interview: string, explore = "", briefing = "") {
   return `You are Alexa, the voice assistant, using the GiftyQuest skill: a gift memory for the people the user loves.
 Today is ${todayIso()}. The user's people: ${people}
 
@@ -90,7 +96,7 @@ Gift ideas, follow these steps in order:
 1. If the user has not said a budget earlier in this conversation, reply only with a short question asking for the budget, and stop. Do not call any tool yet.
 2. With a budget, call get_profile and suggest_gifts with maxUsd set to that budget.
 3. suggest_gifts returns ideaSeeds: one combination of profile signals per idea. Invent one specific, creative gift per seed that a thoughtful person would really buy, combining at least two of its signals; drop a signal that does not fit naturally. No gimmicks such as food-themed objects. Example: seed ["hint: loved the ceramic lamp at their sister's place", "hobby: Powerlifting", "color: Orange"] could become "a hand-stitched orange leather lifting belt".
-4. A hint is evidence of taste, not a shopping list: do not just suggest the item from the hint. Avoid dislikes, allergies and gifts already given.
+4. Every idea must be a real product or experience you could find in a shop today, never a mash-up of materials or themes (a "ceramic light meter" does not exist). Use a hint for what it says about the person, for example "loved a handmade ceramic lamp" means they like handmade, natural things, not that everything should be ceramic. A hint is evidence of taste, not a shopping list: never suggest the same kind of object as the hint (they loved a lamp: no lamp). A brand means a product that brand really makes (Patagonia: outdoor clothing or bags), never another object with the brand's logo or tag. Avoid dislikes, allergies and gifts already given.
 5. For each idea, write a one-sentence reason naming what you mixed, and put only the signals you actually used as short labels in basedOn (for example "ceramic lamp hint", "powerlifting", "orange"). Then call show_gift_cards.
 6. If the user asks for something different ("more fun", "for the beach"), call suggest_gifts again for fresh seeds and adapt the ideas to the request.
 7. Say one sentence like "Here are three ideas on your screen" plus the one you would pick and why.
@@ -99,6 +105,9 @@ Buying:
 - When the user picks an idea, call start_purchase in that same turn with the exact title and price from the cards, then ask "Should I order it?".
 - Only after an explicit yes, call confirm_purchase. Purchases are simulated; never ask for payment details.
 - After ordering, do not ask how the gift went. Ask about the reaction only when the user says the gift was already given.
+
+When the conversation starts with the note that the user just opened Alexa, run this briefing:
+${briefing}
 
 When the user wants to get to know someone better, explore them, or asks what else you should know, run this flow:
 ${explore}
@@ -117,6 +126,9 @@ const clean = (t: string) => t
   .replace(/[*_#`]/g, "")
   .replace(/\s*\n+\s*/g, " ")
   .trim();
+
+/** The first turn when the user opens Alexa: she speaks first, with the briefing. */
+export const OPENED = "[GiftyQuest note: the user just opened Alexa and has not said anything yet. Run the briefing.]";
 
 const KEEP_MESSAGES = 40;
 
@@ -170,6 +182,8 @@ export async function runAlexa(repo: AccountRepo, accountId: string, message: st
     const interview = prompt.messages.map((m) => (m.content.type === "text" ? m.content.text : "")).join("\n");
     const explorePrompt = await client.getPrompt({ name: "explore_person", arguments: {} });
     const explore = explorePrompt.messages.map((m) => (m.content.type === "text" ? m.content.text : "")).join("\n");
+    const briefingPrompt = await client.getPrompt({ name: "daily_briefing", arguments: {} });
+    const briefing = briefingPrompt.messages.map((m) => (m.content.type === "text" ? m.content.text : "")).join("\n");
     const people = asText(await client.callTool({ name: "list_people", arguments: {} }));
 
     const store = await amazonConfig();
@@ -190,7 +204,7 @@ export async function runAlexa(repo: AccountRepo, accountId: string, message: st
     for (let step = 0; step < MAX_STEPS; step++) {
       const res = await bedrock.send(new ConverseCommand({
         modelId: MODEL_ID,
-        system: [{ text: systemPrompt(people, interview, explore) }],
+        system: [{ text: systemPrompt(people, interview, explore, briefing) }],
         messages,
         toolConfig,
         inferenceConfig: { maxTokens: 900, temperature: 0.5 },

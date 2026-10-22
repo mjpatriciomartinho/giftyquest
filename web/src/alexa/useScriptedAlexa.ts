@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Person } from "../../../shared/types";
 import { MONTHS, inDays, soonest, todayIso } from "../lib/dates";
 import { newId } from "../lib/id";
-import { blankPerson } from "../lib/seed";
+import { blankPerson, seedPeople } from "../lib/seed";
+import { briefing, type BriefingItem } from "../../../shared/briefing";
 import { useStore } from "../lib/store";
 import { ideasFor, type Idea, type Theme } from "./catalog";
 
@@ -13,6 +14,27 @@ export type Msg =
   | { id: string; kind: "ideas"; ideas: Idea[] }
   | { id: string; kind: "checkout"; idea: Idea }
   | { id: string; kind: "receipt"; idea: Idea; order: string };
+
+/** Alexa speaks first when opened: the date that matters most and what is still missing. */
+export function opening(people: Person[]): { text: string; top: BriefingItem | undefined } {
+  const top = briefing(people)[0];
+  if (!top) return { top, text: "Hi, I'm Alexa with GiftyQuest. Nothing is coming up in the next few weeks. Tell me something about someone you love, ask for gift ideas, or add someone new." };
+  const what = top.occasion === "Anniversary" ? `Your anniversary with ${top.person}` : `${top.person}'s ${top.occasion.toLowerCase()}`;
+  if (top.giftReady) return { top, text: `${what} is ${inDays(top.inDays)}, and the ${top.giftReady} is already bought. Want to note a hint for someone?` };
+  const hint = top.recentHints[0];
+  return {
+    top,
+    text: [
+      `${what} is ${inDays(top.inDays)}, and there's no gift yet.`,
+      hint ? `In ${MONTHS[Number(hint.date.slice(5, 7)) - 1]} you told me: “${hint.text}”.` : "",
+      top.avoid[0] ? `The ${top.avoid[0].title.toLowerCase()} didn't land, so I'll steer clear of anything like it.` : "",
+      "Want some ideas? What's your budget?",
+    ].filter(Boolean).join(" "),
+  };
+}
+
+export const openingQuick = (top: BriefingItem | undefined) =>
+  top && !top.giftReady ? ["Under $80", "No limit", "New person, by voice"] : ["New person, by voice"];
 
 type NewMsg = Msg extends infer M ? (M extends Msg ? Omit<M, "id"> : never) : never;
 
@@ -282,28 +304,25 @@ export function useScriptedAlexa() {
 
   const restart = useCallback(async () => {
     await store.reset();
-    conv.current = { mode: "free", steps: STEPS, step: 0, pending: null, awaitTheme: null, lastIdeas: null };
-    setMsgs([
-      { id: newId(), kind: "user", text: "Alexa, note that Javier loved the ceramic lamp at their sister's place." },
-      { id: newId(), kind: "bot", text: "Saved to Javier's hints.", tools: ['add_hint(person="javier")'] },
-      { id: newId(), kind: "bot", text: "Heads up: your anniversary with Javier is coming soon. Want a few ideas?", tools: ["get_upcoming_dates(days=30)"] },
-    ]);
-    setQuick(["Yes, show me ideas", "New person, by voice"]);
+    greet(seedPeople());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store]);
+
+  const greet = (people: Person[]) => {
+    const { text, top } = opening(people);
+    conv.current = { mode: "free", steps: STEPS, step: 0, pending: null, awaitTheme: top && !top.giftReady ? "base" : null, lastIdeas: null };
+    if (top) { currentIdRef.current = top.personId; store.select(top.personId); }
+    setMsgs([{ id: newId(), kind: "bot", text, tools: ["get_briefing(withinDays=45)"] }]);
+    setQuick(openingQuick(top));
+  };
 
   // first load
   const started = useRef(false);
   useEffect(() => {
     if (started.current) return;
     started.current = true;
-    const javier = store.people.find((p) => p.id === "javier");
-    const next = javier && soonest(javier);
-    setMsgs([
-      { id: newId(), kind: "user", text: "Alexa, note that Javier loved the ceramic lamp at their sister's place." },
-      { id: newId(), kind: "bot", text: "Saved to Javier's hints.", tools: ['add_hint(person="javier")'] },
-      { id: newId(), kind: "bot", text: `Heads up: your ${next ? next.type.toLowerCase() : "anniversary"} with Javier is ${next ? inDays(next.days) : "coming soon"}. Want a few ideas?`, tools: ["get_upcoming_dates(days=30)"] },
-    ]);
-    setQuick(["Yes, show me ideas", "New person, by voice"]);
+    greet(store.people);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store.people]);
 
   return { msgs, quick, busy, send, restart, startInterview, explore };

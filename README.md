@@ -17,6 +17,8 @@ submission's testing instructions).
 
 - **A card per person:** dates, sizes, likes, dislikes, allergies, dated hints, gift history with
   how each gift landed. Every field is editable.
+- **Alexa speaks first:** when you open Alexa, she tells you the date that matters most, whether a
+  gift is already bought, a recent hint to build on and a past gift to avoid, then asks your budget.
 - **Voice interview:** Alexa asks a few questions, follows up on the answers and fills the card
   live.
 - **Alexa's guesses, with a reason:** traits Alexa infers are shown apart from what you said, and
@@ -54,6 +56,7 @@ npx tsx server/scripts/talk.ts        # live Alexa: hint, ideas, budget, purchas
 npx tsx server/scripts/interview.ts   # live Alexa: full gift interview
 npx tsx server/scripts/ideas.ts       # live Alexa: what the gift ideas combine
 npx tsx server/scripts/explore.ts     # live Alexa: explore an existing person
+npx tsx server/scripts/briefing.ts    # live Alexa: speaks first with the briefing, then a budget
 ```
 
 Server settings (environment variables):
@@ -62,6 +65,7 @@ Server settings (environment variables):
 |---|---|---|
 | `GQ_MODEL` | `eu.amazon.nova-2-lite-v1:0` | Bedrock model or inference profile for the Alexa simulation |
 | `GQ_BEDROCK_REGION` | `eu-west-1` | Bedrock region |
+| `GQ_BEDROCK_ROLE` | empty | Role ARN in another AWS account to call Bedrock through (cross-account), when this account has no Bedrock access |
 | `GQ_JUDGE_CODE` | empty | When set, the live Alexa needs this code (sent as `x-judge-code`). Empty means open, for local development |
 | `GQ_TURNS_PER_DAY` | `120` | Live Alexa turns per demo account per day |
 | `GQ_CREATORS_SSM` | `/giftyquest/amazon-creators.env` | SSM parameter with the Amazon Creators API credentials |
@@ -87,10 +91,11 @@ Each browser gets a demo account (a random id kept in localStorage). Demo accoun
   assistant").
 - Transport: Streamable HTTP, stateless, JSON responses. Protocol version 2025-11-25.
 - Tools: `list_people`, `get_profile`, `create_person`, `update_profile`, `add_preference`,
-  `add_hint`, `save_guesses`, `profile_gaps`, `get_upcoming_dates`, `suggest_gifts`,
+  `add_hint`, `save_guesses`, `profile_gaps`, `get_upcoming_dates`, `get_briefing`, `suggest_gifts`,
   `start_purchase`, `confirm_purchase`, `cancel_purchase`, `record_gift`.
-- Prompts: `gift_interview`, a short voice interview that builds a profile for someone new, and
-  `explore_person`, a few gap-driven questions that deepen an existing card ("Explore with Alexa").
+- Prompts: `gift_interview`, a short voice interview that builds a profile for someone new,
+  `explore_person`, a few gap-driven questions that deepen an existing card ("Explore with Alexa"),
+  and `daily_briefing`, which makes the assistant speak first when it is opened.
 - People can be referred to by name or by how the user calls them ("my girlfriend", "mom").
 
 ## How the Alexa simulation works

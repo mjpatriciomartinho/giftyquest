@@ -5,7 +5,7 @@ import type { Person } from "../../../shared/types";
 import { judgeCode, live, type LiveReply } from "../lib/api";
 import { newId } from "../lib/id";
 import { useStore } from "../lib/store";
-import type { Msg } from "./useScriptedAlexa";
+import { opening, openingQuick, type Msg } from "./useScriptedAlexa";
 
 type Status = { checked: boolean; available: boolean; needsCode: boolean; model: string };
 
@@ -39,11 +39,26 @@ export function useLiveAlexa() {
   const [busy, setBusy] = useState(false);
   const fresh = useRef(true); // the next message starts a new conversation on the server
 
-  const greet = useCallback(() => {
+  // Alexa speaks first: Nova calls get_briefing and opens with the date that matters most.
+  // If the live call fails, the same briefing is phrased locally so the panel is never empty.
+  const greet = useCallback(async () => {
     fresh.current = true;
-    setMsgs([{ id: newId(), kind: "bot", text: "Hi, I'm Alexa with GiftyQuest. Tell me something about someone you love, ask for gift ideas, or add someone new." }]);
-    setQuick(["Gift ideas for Javier", "New person, by voice", "Note that Dani just got into climbing"]);
-  }, []);
+    setMsgs([]);
+    setQuick([]);
+    setBusy(true);
+    const { text, top } = opening(store.people);
+    if (top) store.select(top.personId);
+    try {
+      const reply = await live.open(store.accountId);
+      fresh.current = false;
+      setMsgs([{ id: newId(), kind: "bot", text: reply.text, tools: reply.tools.map(fmtTool) }]);
+    } catch {
+      setMsgs([{ id: newId(), kind: "bot", text }]);
+    } finally {
+      setQuick(openingQuick(top));
+      setBusy(false);
+    }
+  }, [store]);
 
   const check = useCallback(async () => {
     try {
@@ -53,7 +68,13 @@ export function useLiveAlexa() {
       setStatus({ checked: true, available: false, needsCode: false, model: "" });
     }
   }, []);
-  useEffect(() => { check(); greet(); }, [check, greet]);
+  useEffect(() => { check(); }, [check]);
+  const greeted = useRef(false);
+  useEffect(() => {
+    if (!status.available || greeted.current) return;
+    greeted.current = true;
+    greet();
+  }, [status.available, greet]);
 
   const send = useCallback(async (raw: string) => {
     const text = raw.trim();

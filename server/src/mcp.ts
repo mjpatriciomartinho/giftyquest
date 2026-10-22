@@ -107,6 +107,13 @@ export function buildMcpServer(repo: AccountRepo, accountId: string) {
     annotations: { readOnlyHint: true },
   }, ({ withinDays }) => run(false, (a) => gifts.upcomingDates(a, withinDays))());
 
+  server.registerTool("get_briefing", {
+    title: "Briefing",
+    description: "What deserves the user's attention now: upcoming dates (most urgent first), whether a gift is already bought for each, the newest hints to build on and past gifts that did not land. Call it when the user opens the assistant, before they ask for anything.",
+    inputSchema: { withinDays: z.number().int().min(1).max(366).default(45) },
+    annotations: { readOnlyHint: true },
+  }, ({ withinDays }) => run(false, (a) => gifts.getBriefing(a, withinDays))());
+
   server.registerTool("suggest_gifts", {
     title: "Suggest gifts",
     description: "Everything needed to invent gifts for one person within a budget: newest hints, likes, dislikes, allergies, kept guesses and gifts already given. Ask the user for the budget before calling it. Combine at least two of these signals in each idea and explain the reason.",
@@ -166,6 +173,26 @@ export function buildMcpServer(repo: AccountRepo, accountId: string) {
           "4. Save each answer as soon as you get it: add_preference, update_profile or add_hint.",
           '5. The user may say "skip" or "I don\'t know": move on.',
           "6. At the end, call save_guesses with one or two new traits and their reasons. Then ask if they want gift ideas, and ask for a budget before suggesting anything.",
+        ].join("\n"),
+      },
+    }],
+  }));
+
+  server.registerPrompt("daily_briefing", {
+    title: "Proactive briefing",
+    description: "Open the conversation before the user asks: the date that matters most, what is still missing and what to build on.",
+  }, () => ({
+    messages: [{
+      role: "user",
+      content: {
+        type: "text",
+        text: [
+          "The user just opened the assistant and has not asked anything yet. Speak first, out loud, in two or three short sentences.",
+          "1. Call get_briefing.",
+          "2. Pick only the most urgent item. Say the occasion, the person and how many days are left, and whether a gift is already bought.",
+          "3. If no gift is bought yet, mention one recent hint worth building on, and one past gift to avoid if there is one (it was not liked, so say that). Then ask if they want ideas and what the budget is. Do not call suggest_gifts yet.",
+          "4. If the gift is already bought, say so in one sentence and offer to note a hint or plan the next date.",
+          "5. If nothing is coming up, greet briefly and say what you can do: take a hint, suggest gifts or add someone new.",
         ].join("\n"),
       },
     }],

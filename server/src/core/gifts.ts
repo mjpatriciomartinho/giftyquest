@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import type { GiftStatus, Likes, Person, Reaction, SizeKey } from "../../../shared/types";
 import { blankPerson } from "../../../shared/seed";
 import { MONTHS, nextOccurrence, todayIso } from "../../../shared/dates";
+import { briefing } from "../../../shared/briefing";
 import type { Theme } from "../../../shared/catalog";
 import type { Account } from "../store/repo";
 
@@ -119,6 +120,15 @@ export function upcomingDates(account: Account, withinDays: number) {
     .sort((a, b) => a.inDays - b.inDays);
 }
 
+export function getBriefing(account: Account, withinDays: number) {
+  const items = briefing(account.people, withinDays);
+  return {
+    today: todayIso(),
+    items,
+    nothingSoon: items.length === 0,
+  };
+}
+
 const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
 
 /**
@@ -186,7 +196,7 @@ export function suggestGifts(account: Account, ref: string, maxUsd: number | nul
     budgetUsd: maxUsd,
     theme,
     ideaSeeds: ideaSeeds(p),
-    howToUse: "Invent one specific gift per idea seed that a thoughtful person would really buy, combining at least two of its signals (drop a signal that does not fit naturally). No gimmicks such as food-themed objects. Stay within budget, avoid dislikes, allergies and alreadyGiven. A hint is evidence of taste, not a shopping list.",
+    howToUse: "Invent one specific gift per idea seed that a thoughtful person would really buy, combining at least two of its signals (drop a signal that does not fit naturally). No gimmicks such as food-themed objects. Stay within budget, avoid dislikes, allergies and alreadyGiven. A hint is evidence of taste, not a shopping list: never the same kind of object as the hint. A brand means a product that brand really makes, never another object with its logo or tag.",
     dislikes: p.dislikes,
     allergies: p.allergies,
     alreadyGiven: p.gifts.map((g) => `${g.title} (${g.reaction ?? g.status})`),
