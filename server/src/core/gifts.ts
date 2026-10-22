@@ -196,7 +196,7 @@ export function suggestGifts(account: Account, ref: string, maxUsd: number | nul
     budgetUsd: maxUsd,
     theme,
     ideaSeeds: ideaSeeds(p),
-    howToUse: "Invent one specific gift per idea seed that a thoughtful person would really buy. Combine its two signals only when that gives a better real product; otherwise build on the stronger one. No gimmicks such as food-themed objects. Stay within budget, avoid dislikes, allergies and alreadyGiven. A hint is evidence of taste, not a shopping list: never the same kind of object as the hint. A brand means a product that brand really makes, never another object with its logo or tag.",
+    howToUse: "Invent one specific gift per idea seed that a thoughtful person would really buy. Combine its two signals only when that gives a better real product; otherwise build on the stronger one. Only physical products sold on Amazon: no tickets, experiences, services, gift cards or digital codes. Skip the obvious, such as merch of their favorite artists or a game they already play. No gimmicks such as food-themed objects. Stay within budget, avoid dislikes, allergies and alreadyGiven. A hint is evidence of taste, not a shopping list: never the same kind of object as the hint. A brand means a product that brand really makes, never another object with its logo or tag.",
     dislikes: p.dislikes,
     allergies: p.allergies,
     alreadyGiven: p.gifts.map((g) => `${g.title} (${g.reaction ?? g.status})`),
