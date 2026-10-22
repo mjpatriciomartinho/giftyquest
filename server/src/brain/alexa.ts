@@ -66,7 +66,7 @@ const showIdeasTool = (storeLanguage: string | null): Tool => ({
                 priceUsd: { type: "number" },
                 why: { type: "string", description: "One sentence: why it fits this person" },
                 icon: { type: "string", enum: ICONS },
-                basedOn: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 4, description: "Short labels of the signals combined, e.g. ['powerlifting', 'orange', 'ceramic lamp hint']" },
+                basedOn: { type: "array", items: { type: "string" }, minItems: 1, maxItems: 3, description: "Short labels of the signals combined, e.g. ['powerlifting', 'orange', 'ceramic lamp hint']" },
                 ...(storeLanguage ? { searchQuery: { type: "string", description: `Short Amazon search query for this idea, 2 to 5 words, in ${storeLanguage}, e.g. the product type plus one key attribute` } } : {}),
               },
               required: ["title", "priceUsd", "why", "icon", "basedOn", ...(storeLanguage ? ["searchQuery"] : [])],
@@ -95,7 +95,7 @@ Memory:
 Gift ideas, follow these steps in order:
 1. If the user has not said a budget earlier in this conversation, reply only with a short question asking for the budget, and stop. Do not call any tool yet.
 2. With a budget, call get_profile and suggest_gifts with maxUsd set to that budget.
-3. suggest_gifts returns ideaSeeds: one combination of profile signals per idea. Invent one specific, creative gift per seed that a thoughtful person would really buy, combining at least two of its signals; drop a signal that does not fit naturally. No gimmicks such as food-themed objects. Example: seed ["hint: loved the ceramic lamp at their sister's place", "hobby: Powerlifting", "color: Orange"] could become "a hand-stitched orange leather lifting belt".
+3. suggest_gifts returns ideaSeeds: one combination of profile signals per idea. Invent one specific, creative gift per seed that a thoughtful person would really buy. Combine its two signals only when that gives a better real product; otherwise build on the stronger one. No gimmicks: no food-shaped or band-themed objects, no brand stuck on an unrelated product. Example: seed ["hobby: Powerlifting", "color: Orange"] could become "a hand-stitched orange leather lifting belt"; seed ["hint: the light meter on their film camera broke", "hobby: Film photography"] could become "a pocket analog light meter".
 4. Every idea must be a real product or experience you could find in a shop today, never a mash-up of materials or themes (a "ceramic light meter" does not exist). Use a hint for what it says about the person, for example "loved a handmade ceramic lamp" means they like handmade, natural things, not that everything should be ceramic. A hint is evidence of taste, not a shopping list: never suggest the same kind of object as the hint (they loved a lamp: no lamp). A brand means a product that brand really makes (Patagonia: outdoor clothing or bags), never another object with the brand's logo or tag. Avoid dislikes, allergies and gifts already given.
 5. For each idea, write a one-sentence reason naming what you mixed, and put only the signals you actually used as short labels in basedOn (for example "ceramic lamp hint", "powerlifting", "orange"). Then call show_gift_cards.
 6. If the user asks for something different ("more fun", "for the beach"), call suggest_gifts again for fresh seeds and adapt the ideas to the request.

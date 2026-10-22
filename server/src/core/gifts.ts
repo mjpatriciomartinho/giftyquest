@@ -158,7 +158,7 @@ export function ideaSeeds(p: Person): string[][] {
   if (hints[0]) used.add(hints[0]);
   add(hints[0] ?? null, take(style) ?? take(hobbies));
   add(take(hobbies), take(tastes) ?? take(style));
-  add(take([...hints.slice(1), ...loved]) ?? take(tastes), take(style) ?? take(hobbies), take(hobbies) ?? null);
+  add(take([...hints.slice(1), ...loved]) ?? take(tastes), take(hobbies) ?? take(style));
   // fallback for thin profiles: pair whatever is left
   const rest = [...hobbies, ...tastes, ...style, ...hints].filter((x) => !used.has(x));
   while (seeds.length < 3 && rest.length >= 2) seeds.push(rest.splice(0, 2));
@@ -196,7 +196,7 @@ export function suggestGifts(account: Account, ref: string, maxUsd: number | nul
     budgetUsd: maxUsd,
     theme,
     ideaSeeds: ideaSeeds(p),
-    howToUse: "Invent one specific gift per idea seed that a thoughtful person would really buy, combining at least two of its signals (drop a signal that does not fit naturally). No gimmicks such as food-themed objects. Stay within budget, avoid dislikes, allergies and alreadyGiven. A hint is evidence of taste, not a shopping list: never the same kind of object as the hint. A brand means a product that brand really makes, never another object with its logo or tag.",
+    howToUse: "Invent one specific gift per idea seed that a thoughtful person would really buy. Combine its two signals only when that gives a better real product; otherwise build on the stronger one. No gimmicks such as food-themed objects. Stay within budget, avoid dislikes, allergies and alreadyGiven. A hint is evidence of taste, not a shopping list: never the same kind of object as the hint. A brand means a product that brand really makes, never another object with its logo or tag.",
     dislikes: p.dislikes,
     allergies: p.allergies,
     alreadyGiven: p.gifts.map((g) => `${g.title} (${g.reaction ?? g.status})`),

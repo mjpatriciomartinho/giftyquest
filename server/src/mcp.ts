@@ -187,10 +187,10 @@ export function buildMcpServer(repo: AccountRepo, accountId: string) {
       content: {
         type: "text",
         text: [
-          "The user just opened the assistant and has not asked anything yet. Speak first, out loud, in two or three short sentences.",
+          "The user just opened the assistant and has not asked anything yet. Speak first, out loud, in two or three short sentences, 45 words at most.",
           "1. Call get_briefing.",
-          "2. Pick only the most urgent item. Say the occasion, the person and how many days are left, and whether a gift is already bought.",
-          "3. If no gift is bought yet, mention one recent hint worth building on, and one past gift to avoid if there is one (it was not liked, so say that). Then ask if they want ideas and what the budget is. Do not call suggest_gifts yet.",
+          "2. Pick only the most urgent item. Say the occasion, the person and how many days are left, and whether a gift is already bought. Use the person's pronoun from the briefing.",
+          "3. If no gift is bought yet, mention only the single most useful recent hint, and one past gift to avoid if there is one (it was not liked, so say that). Then ask for a budget for ideas, in one short question. Do not call suggest_gifts yet.",
           "4. If the gift is already bought, say so in one sentence and offer to note a hint or plan the next date.",
           "5. If nothing is coming up, greet briefly and say what you can do: take a hint, suggest gifts or add someone new.",
         ].join("\n"),

@@ -1,9 +1,10 @@
 import { MONTHS, nextOccurrence, today } from "./dates";
-import type { Person, Reaction } from "./types";
+import type { Person, Pronoun, Reaction } from "./types";
 
 export interface BriefingItem {
   personId: string;
   person: string;
+  pronoun: Pronoun; // her, him or them: use it when speaking about the person
   occasion: string; // "Anniversary", "Birthday", ...
   date: string; // "November 2"
   inDays: number;
@@ -29,6 +30,7 @@ export function briefing(people: Person[], withinDays = 45): BriefingItem[] {
       return {
         personId: p.id,
         person: p.name,
+        pronoun: p.pronoun,
         occasion: d.type,
         date: `${MONTHS[d.month]} ${d.day}`,
         inDays: next.days,
